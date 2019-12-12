@@ -1,0 +1,23 @@
+FROM registry.fedoraproject.org/fedora:30
+MAINTAINER Dave Baker <dbaker@redhat.com>
+
+RUN set -x && \
+    ( if [ -e /etc/os-release ]; then cat /etc/os-release; fi ) && \
+    yum -y update && \
+    yum install -y net-tools iproute mlocate man-db \
+                   nmap nmap-ncat socat telnet openssh-clients wget jq \
+                   procps-ng findutils sslscan
+
+# NOTE:
+# We do *NOT* run these in this diag container since we want the yum
+# data cached for future ad-hoc queries/installations/etc.
+#
+# ...   yum clean all && \
+# ...   rm -rf /var/cache/yum
+#
+
+# Create a user by default, but we'll run as root
+RUN useradd user
+
+CMD /bin/bash
+
